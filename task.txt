@@ -1,0 +1,44 @@
+### TASK 1
+select * ,
+(select customer_id from orders o where order_details.order_id = o.id) as customer_id
+from order_details;
+
+### TASK2
+
+SELECT * FROM order_details WHERE order_id IN (SELECT id as order_id FROM orders WHERE shipper_id = 3);
+
+###TASK3
+select order_id, avg(quantity) as avg_quantity from (select * from order_details where quantity >10) as temp_table group by order_id;
+
+###TASK4
+with temp_table as 
+(select * from order_details where quantity >10)
+select order_id, avg(quantity) as avg_quantity from temp_table group by order_id;
+
+###TASK5
+use mydb;
+
+DROP FUNCTION IF EXISTS divide_floats;
+
+DELIMITER $$
+
+CREATE FUNCTION divide_floats(num1 FLOAT, num2 FLOAT)
+RETURNS FLOAT
+DETERMINISTIC
+BEGIN
+    DECLARE result FLOAT;
+    
+    
+    IF num2 = 0 THEN
+        SET result = NULL;
+    ELSE
+        SET result = num1 / num2;
+    END IF;
+    
+    RETURN result;
+END $$
+
+DELIMITER ;
+
+SELECT quantity, divide_floats(quantity, 2.0) AS divided_quantity
+FROM order_details;
